@@ -14,7 +14,7 @@ type Article struct {
 	Status       int       `gorm:"default:1" json:"status"` // 1-发布, 0-草稿
 	ViewCount    int       `gorm:"default:0" json:"view_count"`
 	LikeCount    int       `gorm:"default:0" json:"like_count"`
-	CommentCount int       `gorm:"default:0" json:"comment_count"`        // 新增评论计数
+	CommentCount int       `gorm:"default:0" json:"comment_count"`        // 评论计数
 	UserID       uint      `json:"user_id"`                               // 作者ID
 	User         User      `gorm:"foreignKey:UserID" json:"user"`         // 关联用户
 	CategoryID   uint      `json:"category_id"`                           // 分类ID
