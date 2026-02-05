@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ==============================
 # Go Gin博客系统专用.gitignore
 # 生成时间: 2026-02-05
@@ -97,3 +98,20 @@ target/
 1770120649_AvlUFZmT.jpg
 1770120996_VtnUgPc0.png
 1770121012_uTJLz5a.png
+=======
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+>>>>>>> 084d62e157c61e1c432aed4ccaae89ebdc3531bb
