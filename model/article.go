@@ -10,10 +10,10 @@ type Article struct {
 	Title        string    `gorm:"not null" json:"title"`
 	Content      string    `gorm:"type:text" json:"content"`
 	Summary      string    `gorm:"type:text" json:"summary"`
-	Cover        string    `json:"cover"`                   // 封面图片URL
-	Status       int       `gorm:"default:1" json:"status"` // 1-发布, 0-草稿
-	ViewCount    int       `gorm:"default:0" json:"view_count"`
-	LikeCount    int       `gorm:"default:0" json:"like_count"`
+	Cover        string    `json:"cover"`                                 // 封面图片URL
+	Status       int       `gorm:"default:1" json:"status"`               // 1-发布, 0-草稿
+	ViewCount    int       `gorm:"default:0" json:"view_count"`           // 浏览计数
+	LikeCount    int       `gorm:"default:0" json:"like_count"`           // 点赞计数
 	CommentCount int       `gorm:"default:0" json:"comment_count"`        // 评论计数
 	UserID       uint      `json:"user_id"`                               // 作者ID
 	User         User      `gorm:"foreignKey:UserID" json:"user"`         // 关联用户
