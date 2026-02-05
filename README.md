@@ -215,15 +215,29 @@ database:
 - 接口和结构体添加详细注释
 - 错误处理要完整且明确
 
-### 数据库迁移
-项目使用 GORM AutoMigrate 自动创建表结构：
-- users（用户表）
-- articles（文章表）
-- categories（分类表）
-- tags（标签表）
-- article_tags（文章标签关联表）
-- likes（点赞表）
-- comments（评论表）
+### 数据库管理
+
+#### 自动迁移
+项目使用 GORM AutoMigrate 自动管理数据库结构：
+- **users**（用户表）- 存储用户基本信息和认证数据
+- **articles**（文章表）- 存储博客文章内容和元数据
+- **categories**（分类表）- 文章分类管理体系
+- **tags**（标签表）- 文章标签系统
+- **article_tags**（文章标签关联表）- 多对多关系表
+- **likes**（点赞表）- 用户点赞记录
+- **comments**（评论表）- 文章评论系统
+
+#### 表结构特点
+- 所有表都包含 `created_at` 和 `updated_at` 时间戳字段
+- 使用软删除机制（`deleted_at` 字段）
+- 主键统一使用 `uint` 类型的自增ID
+- 外键关系通过 GORM 标签自动维护
+
+#### 数据库初始化流程
+1. 应用启动时自动检查并创建表结构
+2. 如果表已存在则只同步字段变更
+3. 不会删除现有数据，保证数据安全性
+4. 支持字段添加和修改，不支持字段删除
 
 ### 日志系统
 - 支持 INFO、WARNING、ERROR 三级日志
@@ -328,3 +342,39 @@ MIT License
 ## 📞 联系方式
 
 如有问题，请提交 GitHub Issue 或联系项目维护者。
+
+## 📝 Git提交规范
+
+### 提交信息格式
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### 提交类型说明
+- **feat**: 新功能开发
+- **fix**: Bug修复
+- **docs**: 文档更新
+- **style**: 代码格式调整
+- **refactor**: 代码重构
+- **perf**: 性能优化
+- **test**: 测试相关
+- **chore**: 构建过程或辅助工具变动
+
+### 示例提交信息
+```
+docs(README): 完善数据库管理文档
+
+- 详细说明GORM AutoMigrate工作机制
+- 添加表结构特点描述
+- 补充数据库初始化流程
+
+refactor(project): 清理空目录和冗余文件
+
+- 删除空的migrations目录
+- 移除未使用的SQLite依赖
+- 优化项目结构
+```
