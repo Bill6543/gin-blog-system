@@ -1,87 +1,330 @@
 # Gin Blog System
 
-基于 Go 和 Gin 框架构建的博客系统。
+基于 Go 和 Gin 框架构建的现代化博客系统，采用分层架构设计，具备完整的博客核心功能。
 
-## 功能特性
+## 🌟 项目特色
 
-- 文章管理（创建、编辑、删除、发布）
-- 用户认证（注册、登录、JWT令牌）
-- 分类管理
-- 文件上传（图片等）
-- RESTful API 设计
+- **现代化架构**：采用标准的 MVC 分层架构，代码结构清晰
+- **RESTful API**：遵循 REST 设计原则，提供完整的 HTTP API 接口
+- **安全认证**：基于 JWT 的用户身份认证机制
+- **数据持久化**：使用 GORM ORM 框架，支持 MySQL 数据库
+- **智能日志**：多级日志系统，支持文件和控制台输出
+- **灵活配置**：YAML 配置文件，支持环境差异化配置
+- **文件管理**：完善的文件上传和静态资源服务
+- **完整功能**：涵盖博客系统的全部核心功能模块
 
-## 技术栈
+## 🔧 技术栈
 
-- Go 语言
-- Gin Web 框架
-- GORM ORM
-- MySQL 数据库
-- JWT 认证
-- YAML 配置
+### 核心框架
+- **Go 1.20+** - 现代化编程语言
+- **Gin v1.9+** - 高性能 HTTP Web 框架
+- **GORM v1.25+** - 强大的 ORM 数据库工具
 
-## 快速开始
+### 数据存储
+- **MySQL 8.0+** - 关系型数据库
+- **YAML** - 配置文件格式
 
-### 环境准备
+### 安全认证
+- **JWT (JSON Web Token)** - 无状态认证机制
+- **bcrypt** - 密码哈希加密
 
-1. 安装 Go 1.20+
-2. 安装 MySQL 数据库
+### 工具库
+- **Viper** - 配置管理（通过 YAML）
+- **gorm.io/driver/mysql** - MySQL 驱动
+- **github.com/golang-jwt/jwt/v5** - JWT 处理
 
-### 配置
+## 🚀 快速开始
 
-1. 修改 `config/db.yaml` 配置数据库连接信息
-2. 修改 `config/app.yaml` 配置应用设置
+### 环境要求
+- Go 1.20+
+- MySQL 8.0+
 
-### 运行
-
+### 项目初始化
 ```bash
-# 下载依赖
 go mod tidy
-
-# 运行项目
-go run main.go
+mkdir -p logs static/uploads config
 ```
 
-项目将在 `http://localhost:8080` 启动。
+### 配置文件
+创建 `config/app.yaml` 和 `config/db.yaml` 配置文件
 
-## API 接口
+### 启动项目
+```bash
+go run main.go
+```
+项目在 `http://localhost:8080` 运行
 
-### 认证接口
-
-- `POST /api/v1/auth/register` - 用户注册
-- `POST /api/v1/auth/login` - 用户登录
-- `POST /api/v1/auth/logout` - 用户登出
-
-### 文章接口
-
-- `GET /api/v1/articles` - 获取文章列表
-- `GET /api/v1/articles/:id` - 获取文章详情
-- `POST /api/v1/articles` - 创建文章
-- `PUT /api/v1/articles/:id` - 更新文章
-- `DELETE /api/v1/articles/:id` - 删除文章
-
-### 分类接口
-
-- `GET /api/v1/categories` - 获取分类列表
-- `GET /api/v1/categories/:id` - 获取分类详情
-- `POST /api/v1/categories` - 创建分类
-- `PUT /api/v1/categories/:id` - 更新分类
-- `DELETE /api/v1/categories/:id` - 删除分类
-
-### 上传接口
-
-- `POST /api/v1/upload/image` - 上传图片
-- `POST /api/v1/upload/file` - 上传文件
-
-## 项目结构
+## 📁 项目结构
 
 ```
 gin-blog-system/
 ├── config/           # 配置文件
+│   ├── config.go     # 应用配置加载
+│   └── database.go   # 数据库连接配置
 ├── middleware/       # 中间件
+│   ├── auth.go       # JWT 认证中间件
+│   ├── logger.go     # 基础日志中间件
+│   └── enhanced_logger.go # 增强版日志中间件
 ├── model/            # 数据模型
+│   ├── article.go    # 文章模型
+│   ├── user.go       # 用户模型
+│   ├── category.go   # 分类模型
+│   ├── tag.go        # 标签模型
+│   ├── comment.go    # 评论模型
+│   ├── like.go       # 点赞模型
+│   ├── article_tag.go # 文章标签关联模型
+│   └── response.go   # API 响应模型
 ├── router/           # 路由定义
-├── service/          # 业务逻辑
+│   ├── routes.go     # 路由注册中心
+│   ├── auth.go       # 认证路由
+│   ├── article.go    # 文章路由
+│   ├── category.go   # 分类路由
+│   ├── tag.go        # 标签路由
+│   ├── comment.go    # 评论路由
+│   ├── upload.go     # 上传路由
+│   └── health.go     # 健康检查路由
+├── service/          # 业务逻辑层
+│   ├── auth_service.go    # 认证服务
+│   ├── article_service.go # 文章服务
+│   ├── category_service.go # 分类服务
+│   ├── tag_service.go     # 标签服务
+│   ├── comment_service.go # 评论服务
+│   └── upload_service.go  # 上传服务
 ├── utils/            # 工具函数
+│   ├── logger.go     # 日志工具
+│   ├── response.go   # 响应工具
+│   ├── file.go       # 文件处理工具
+│   └── time_format.go # 时间格式化工具
+├── static/           # 静态资源
+│   └── uploads/      # 上传文件目录
+├── logs/             # 日志文件目录
 ├── main.go           # 主程序入口
-└── README.md
+└── README.md         # 项目文档
 ```
+
+## 🔄 核心功能模块
+
+### 用户系统
+- 用户注册与登录
+- JWT Token 认证
+- 密码加密存储
+- 用户信息管理
+
+### 文章管理
+- 文章创建、编辑、删除
+- 文章分类管理
+- 文章标签系统
+- 文章浏览量统计
+- 文章点赞功能
+- 文章评论系统
+
+### 内容组织
+- 分类管理（Category）
+- 标签管理（Tag）
+- 多对多关联关系
+
+### 文件服务
+- 图片上传
+- 文件类型验证
+- 文件大小限制
+- 静态资源服务
+
+## 🔐 API 接口文档
+
+### 健康检查
+- `GET /health` - 服务健康状态检查
+
+### 认证接口
+- `POST /api/auth/register` - 用户注册
+- `POST /api/auth/login` - 用户登录
+- `POST /api/auth/logout` - 用户登出
+
+### 文章接口
+- `GET /api/articles` - 获取文章列表（需认证）
+- `GET /api/articles/:id` - 获取文章详情（需认证）
+- `POST /api/articles` - 创建文章（需认证）
+- `PUT /api/articles/:id` - 更新文章（需认证）
+- `DELETE /api/articles/:id` - 删除文章（需认证）
+- `POST /api/articles/:id/like` - 文章点赞（需认证）
+- `DELETE /api/articles/:id/like` - 取消点赞（需认证）
+
+### 分类接口
+- `GET /api/categories` - 获取分类列表
+- `GET /api/categories/:id` - 获取分类详情
+- `POST /api/categories` - 创建分类
+- `PUT /api/categories/:id` - 更新分类
+- `DELETE /api/categories/:id` - 删除分类
+
+### 标签接口
+- `GET /api/tags` - 获取标签列表
+- `GET /api/tags/:id` - 获取标签详情
+- `POST /api/tags` - 创建标签
+- `PUT /api/tags/:id` - 更新标签
+- `DELETE /api/tags/:id` - 删除标签
+
+### 评论接口
+- `POST /api/comments` - 创建评论（需认证）
+- `GET /api/comments/article/:article_id` - 获取文章评论列表（需认证）
+- `GET /api/comments/:id` - 获取评论详情（需认证）
+- `DELETE /api/comments/:id` - 删除评论（需认证）
+
+### 上传接口
+- `POST /api/upload/image` - 上传图片
+- `POST /api/upload/file` - 上传文件
+
+## ⚙️ 配置说明
+
+### 应用配置 (app.yaml)
+```yaml
+app:
+  name: "Gin Blog System"
+  port: "8080"
+  debug: true
+  jwt_secret: "your-jwt-secret-key"
+
+upload:
+  max_size: 10485760  # 10MB
+  allowed_types:
+    - "image/jpeg"
+    - "image/png"
+    - "image/gif"
+  save_path: "./static/uploads"
+```
+
+### 数据库配置 (db.yaml)
+```yaml
+database:
+  driver: "mysql"
+  host: "localhost"
+  port: "3306"
+  username: "your_username"
+  password: "your_password"
+  dbname: "blog_system"
+  charset: "utf8mb4"
+  parseTime: true
+  loc: "Asia/Shanghai"
+  maxIdleConns: 10
+  maxOpenConns: 100
+```
+
+## 🛠️ 开发指南
+
+### 代码规范
+- 遵循 Go 语言官方编码规范
+- 使用驼峰命名法
+- 接口和结构体添加详细注释
+- 错误处理要完整且明确
+
+### 数据库迁移
+项目使用 GORM AutoMigrate 自动创建表结构：
+- users（用户表）
+- articles（文章表）
+- categories（分类表）
+- tags（标签表）
+- article_tags（文章标签关联表）
+- likes（点赞表）
+- comments（评论表）
+
+### 日志系统
+- 支持 INFO、WARNING、ERROR 三级日志
+- 自动按日期轮转日志文件
+- JSON 格式日志便于分析
+- 控制台实时输出
+
+### 错误处理
+- 统一的错误响应格式
+- 详细的错误信息记录
+- HTTP 状态码规范使用
+
+## 📊 数据模型关系
+
+```mermaid
+erDiagram
+    users ||--o{ articles : writes
+    users ||--o{ comments : writes
+    users ||--o{ likes : gives
+    articles ||--o{ comments : has
+    articles ||--o{ likes : receives
+    articles ||--|| categories : belongs_to
+    articles }|--{ tags : tagged_with
+    comments ||--o{ comments : replies_to
+    
+    users {
+        uint id PK
+        string username UK
+        string email UK
+        string password
+        string avatar
+        int status
+    }
+    
+    articles {
+        uint id PK
+        string title
+        text content
+        text summary
+        string cover
+        int status
+        int view_count
+        int like_count
+        int comment_count
+        uint user_id FK
+        uint category_id FK
+    }
+    
+    categories {
+        uint id PK
+        string name
+        text description
+        int status
+    }
+    
+    tags {
+        uint id PK
+        string name
+        string color
+        int status
+    }
+```
+
+## 🔒 安全特性
+
+- JWT Token 认证机制
+- 密码 bcrypt 加密存储
+- SQL 注入防护（GORM ORM）
+- XSS 攻击防护
+- 文件上传安全验证
+- 请求频率限制（可扩展）
+
+## 🚀 部署建议
+
+### 生产环境配置
+1. 设置 `debug: false`
+2. 使用强密码的 JWT Secret
+3. 配置 HTTPS 证书
+4. 设置合适的数据库连接池参数
+5. 配置反向代理（Nginx/Apache）
+
+### 性能优化
+- 启用数据库连接池
+- 使用 Redis 缓存热点数据
+- 静态资源 CDN 加速
+- 数据库索引优化
+
+## 🤝 贡献指南
+
+欢迎提交 Issue 和 Pull Request 来改进项目！
+
+### 开发流程
+1. Fork 项目
+2. 创建功能分支
+3. 提交更改
+4. 发起 Pull Request
+
+## 📄 许可证
+
+MIT License
+
+## 📞 联系方式
+
+如有问题，请提交 GitHub Issue 或联系项目维护者。
