@@ -203,8 +203,11 @@ database:
   charset: "utf8mb4"
   parseTime: true
   loc: "Asia/Shanghai"
-  maxIdleConns: 10
-  maxOpenConns: 100
+  # 连接池配置
+  maxIdleConns: 20        # 空闲连接数
+  maxOpenConns: 100       # 最大打开连接数
+  connMaxLifetime: "5m"   # 连接最大生命周期
+  connMaxIdleTime: "10m"  # 空闲连接最大存活时间
 ```
 
 ## 🛠️ 开发指南
@@ -310,6 +313,45 @@ erDiagram
 - 文件上传安全验证
 - 请求频率限制（可扩展）
 
+## 📊 数据库连接池监控
+
+系统提供完善的数据库连接池监控功能：
+
+### 监控接口
+- `GET /health/db` - 获取数据库连接池详细统计信息
+
+### 监控指标
+```json
+{
+  "status": "healthy",
+  "timestamp": "2026-02-05 15:30:45",
+  "database": {
+    "max_open_connections": 100,
+    "open_connections": 15,
+    "in_use": 3,
+    "idle": 12,
+    "wait_count": 0,
+    "wait_duration": "0s",
+    "max_idle_closed": 5,
+    "max_lifetime_closed": 2,
+    "max_idle_time_closed": 1
+  }
+}
+```
+
+### 关键指标说明
+- **open_connections**: 当前打开的连接数
+- **in_use**: 正在使用的连接数
+- **idle**: 空闲连接数
+- **wait_count**: 等待连接的请求数
+- **max_idle_closed**: 因空闲而关闭的连接数
+
+### 自动告警机制
+系统会在以下情况自动标记警告：
+- 连接池使用率超过80%
+- 出现连接等待情况
+- 数据库统计信息获取失败
+
 ## 🚀 部署建议
 
 ### 生产环境配置
@@ -320,7 +362,8 @@ erDiagram
 5. 配置反向代理（Nginx/Apache）
 
 ### 性能优化
-- 启用数据库连接池
+- **数据库连接池优化**：智能配置空闲连接、最大连接数和连接生命周期
+- **实时监控**：提供 `/health/db` 接口监控连接池状态
 - 使用 Redis 缓存热点数据
 - 静态资源 CDN 加速
 - 数据库索引优化

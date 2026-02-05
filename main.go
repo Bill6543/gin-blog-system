@@ -23,6 +23,8 @@ func main() {
 	r := gin.New() // 使用 New() 而不是 Default()，以便我们可以自定义中间件
 	// 添加增强版日志中间件
 	r.Use(middleware.EnhancedLogger())
+	// 添加数据库监控中间件
+	r.Use(middleware.DBMonitor())
 	// 添加恢复中间件
 	r.Use(gin.Recovery())
 

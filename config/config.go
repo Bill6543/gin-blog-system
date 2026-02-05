@@ -24,17 +24,19 @@ type AppConf struct {
 // DBConfig 数据库配置
 type DBConf struct {
 	Database struct {
-		Driver       string `yaml:"driver"`
-		Host         string `yaml:"host"`
-		Port         string `yaml:"port"`
-		Username     string `yaml:"username"`
-		Password     string `yaml:"password"`
-		DBName       string `yaml:"dbname"`
-		Charset      string `yaml:"charset"`
-		ParseTime    bool   `yaml:"parseTime"`
-		Loc          string `yaml:"loc"`
-		MaxIdleConns int    `yaml:"maxIdleConns"`
-		MaxOpenConns int    `yaml:"maxOpenConns"`
+		Driver          string `yaml:"driver"`
+		Host            string `yaml:"host"`
+		Port            string `yaml:"port"`
+		Username        string `yaml:"username"`
+		Password        string `yaml:"password"`
+		DBName          string `yaml:"dbname"`
+		Charset         string `yaml:"charset"`
+		ParseTime       bool   `yaml:"parseTime"`
+		Loc             string `yaml:"loc"`
+		MaxIdleConns    int    `yaml:"maxIdleConns"`
+		MaxOpenConns    int    `yaml:"maxOpenConns"`
+		ConnMaxLifetime string `yaml:"connMaxLifetime"`
+		ConnMaxIdleTime string `yaml:"connMaxIdleTime"`
 	} `yaml:"database"`
 }
 
