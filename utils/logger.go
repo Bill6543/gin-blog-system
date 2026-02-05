@@ -14,7 +14,7 @@ type LogFile struct {
 	file           *os.File
 	path           string
 	size           int64
-	maxSize        int64 // 最大文件大小，单位字节
+	maxSize        int64
 	mutex          sync.Mutex
 	lastRotateDate string // 上次轮转的日期
 }
