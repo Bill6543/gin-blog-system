@@ -9,7 +9,7 @@ type Article struct {
 	ID           uint      `gorm:"primaryKey" json:"id"`
 	Title        string    `gorm:"not null" json:"title"`
 	Content      string    `gorm:"type:text" json:"content"`
-	Summary      string    `gorm:"type:text" json:"summary"`
+	Summary      string    `gorm:"type:text" json:"summary"`              // 文章摘要
 	Cover        string    `json:"cover"`                                 // 封面图片URL
 	Status       int       `gorm:"default:1" json:"status"`               // 1-发布, 0-草稿
 	ViewCount    int       `gorm:"default:0" json:"view_count"`           // 浏览计数
