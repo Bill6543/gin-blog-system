@@ -2,6 +2,7 @@ package model
 
 import (
 	"gin-blog-system/utils"
+	"strings"
 )
 
 // ArticleResponse 用于API响应的文章结构体
@@ -71,14 +72,28 @@ type CommentResponse struct {
 	UpdatedAt utils.CustomTime `json:"updated_at"` // 使用自定义时间格式
 }
 
+// addStaticPrefix 为图片路径添加静态文件前缀
+func addStaticPrefix(path string) string {
+	if path == "" {
+		return "/static/default_cover.png"
+	}
+	// 如果已经是完整路径，直接返回
+	if strings.HasPrefix(path, "/static/") {
+		return path
+	}
+	// 添加前缀（注意：Gin静态文件配置为 r.Static("/static", "./static/uploads")）
+	return "/static/" + path
+}
+
 // ConvertToArticleResponse 将Article模型转换为API响应结构体
 func (a *Article) ConvertToArticleResponse() *ArticleResponse {
 	response := &ArticleResponse{
-		ID:           a.ID,
-		Title:        a.Title,
-		Content:      a.Content,
-		Summary:      a.Summary,
-		Cover:        a.Cover,
+		ID:      a.ID,
+		Title:   a.Title,
+		Content: a.Content,
+		Summary: a.Summary,
+		// 为图片路径添加静态文件前缀
+		Cover:        addStaticPrefix(a.Cover),
 		Status:       a.Status,
 		ViewCount:    a.ViewCount,
 		LikeCount:    a.LikeCount,
@@ -97,11 +112,12 @@ func (a *Article) ConvertToArticleResponse() *ArticleResponse {
 	// 转换关联对象
 	if a.User.ID != 0 {
 		response.User = UserResponse{
-			ID:        a.User.ID,
-			Username:  a.User.Username,
-			Nickname:  a.User.Nickname,
-			Email:     a.User.Email,
-			Avatar:    a.User.Avatar,
+			ID:       a.User.ID,
+			Username: a.User.Username,
+			Nickname: a.User.Nickname,
+			Email:    a.User.Email,
+			// 为头像路径添加静态文件前缀
+			Avatar:    addStaticPrefix(a.User.Avatar),
 			Status:    a.User.Status,
 			CreatedAt: utils.CustomTime{Time: a.User.CreatedAt},
 			UpdatedAt: utils.CustomTime{Time: a.User.UpdatedAt},

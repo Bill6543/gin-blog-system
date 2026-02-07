@@ -27,7 +27,7 @@ func UploadImage(fileHeader *multipart.FileHeader) (string, error) {
 	// 生成唯一文件名
 	extension := filepath.Ext(fileHeader.Filename)
 	filename := fmt.Sprintf("%d_%s%s", time.Now().Unix(), generateRandomString(8), extension)
-	relativePath := filepath.Join("uploads", time.Now().Format("2006/01/02")) // 按日期组织文件
+	relativePath := time.Now().Format("2006/01/02") // 按日期组织文件
 
 	// 构建完整路径
 	fullPath := filepath.Join(config.AppConfig.Upload.SavePath, relativePath)
@@ -37,7 +37,7 @@ func UploadImage(fileHeader *multipart.FileHeader) (string, error) {
 		return "", fmt.Errorf("保存文件失败: %v", err)
 	}
 
-	// 返回相对URL路径
+	// 返回相对URL路径（不包含uploads前缀，因为static已映射到uploads目录）
 	return filepath.Join(relativePath, filename), nil
 }
 

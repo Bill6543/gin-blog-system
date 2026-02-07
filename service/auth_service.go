@@ -41,7 +41,7 @@ func CreateUser(user *model.User) error {
 
 	// 如果没有提供头像，则设置默认头像
 	if user.Avatar == "" {
-		user.Avatar = "/static/uploads/default_avatar.png"
+		user.Avatar = "/static/default_avatar.png"
 	}
 
 	// 密码加密

@@ -19,7 +19,7 @@ func CreateArticle(article *model.Article) error {
 
 	// 如果封面为空，则使用默认封面
 	if article.Cover == "" {
-		article.Cover = "/static/uploads/default_cover.png"
+		article.Cover = "/static/default_cover.png"
 	}
 
 	// 创建文章
