@@ -4,6 +4,7 @@ import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
 import ArticleList from './pages/ArticleList'
 import ArticleDetail from './pages/ArticleDetail'
+import AdminDashboard from './pages/AdminDashboard'
 import Navbar from './components/Navbar'
 import './App.css'
 
@@ -42,25 +43,7 @@ function App() {
   return (
     <Router>
       <div className="app">
-        {/* 临时测试：强制显示退出按钮 */}
-        {isAuthenticated && (
-          <div style={{ 
-            position: 'fixed', 
-            top: '10px', 
-            right: '10px', 
-            zIndex: 1000,
-            background: '#ff4757',
-            color: 'white',
-            padding: '12px 24px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: '600',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-          }}>
-            🔴 强制退出按钮（测试用）
-          </div>
-        )}
+
         
         <Routes>
           {/* 登录页面 - 未登录用户可访问 */}
@@ -99,6 +82,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <ArticleDetail />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* 管理后台 - 需要登录 */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
               </ProtectedRoute>
             } 
           />

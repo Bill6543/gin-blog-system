@@ -1,10 +1,15 @@
 import { useAuth } from '../hooks/useAuth'
 import { authApi } from '../api'
 import { useLocation } from 'react-router-dom'
+import { useState, useRef } from 'react'
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth()
   const location = useLocation()
+  
+  // 鼠标悬停状态
+  const [isHovered, setIsHovered] = useState(false)
+  const navbarRef = useRef<HTMLDivElement>(null)
 
   const handleLogout = async () => {
     try {
@@ -21,6 +26,9 @@ const Navbar = () => {
 
   return (
     <nav 
+      ref={navbarRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{ 
         position: 'fixed',
         top: '0',
@@ -37,7 +45,10 @@ const Navbar = () => {
           ? '0 2px 10px rgba(0,0,0,0.05)' 
           : '0 2px 10px rgba(0,0,0,0.2)',
         padding: '0 20px',
-        backdropFilter: isArticleDetailPage ? 'blur(10px)' : 'none'
+        backdropFilter: isArticleDetailPage ? 'blur(10px)' : 'none',
+        opacity: isHovered ? 1 : 0,
+        transition: 'opacity 0.3s ease',
+        overflow: 'hidden'
       }}
     >
       {/* 左侧标题 */}
@@ -65,6 +76,23 @@ const Navbar = () => {
         <span style={{ color: 'white', fontSize: '16px' }}>
           欢迎，{user?.nickname || user?.username}
         </span>
+        <button 
+          onClick={() => window.location.href = '/admin'}
+          style={{
+            background: '#4CAF50',
+            color: 'white',
+            border: '2px solid #4CAF50',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: '600',
+            minWidth: '120px',
+            marginRight: '10px'
+          }}
+        >
+          管理后台
+        </button>
         <button 
           onClick={handleLogout}
           style={{

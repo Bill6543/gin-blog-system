@@ -36,28 +36,46 @@ const ArticleDetail = () => {
   const [userLiked, setUserLiked] = useState(false)
   const { isAuthenticated, user } = useAuth()
 
-  // 强制状态同步钩子
+  // 固定间隔状态同步钩子 - 每10秒检查一次
   useEffect(() => {
     if (article && isAuthenticated && user) {
+      let intervalId: NodeJS.Timeout | null = null;
+      
+      // 状态检查核心函数
       const checkAndSyncStatus = async () => {
         try {
+          console.log(`[${new Date().toLocaleTimeString()}] 执行点赞状态检查 (固定间隔: 10000ms)`);
           const response = await articleApi.checkUserLiked(article.id);
           if (response.data.code === 200) {
-            setUserLiked(response.data.data.is_liked);
+            const serverStatus = response.data.data.is_liked;
+            // 只有状态真正改变时才更新UI
+            if (serverStatus !== userLiked) {
+              console.log(`状态变更: ${userLiked} -> ${serverStatus}`);
+              setUserLiked(serverStatus);
+            }
           }
         } catch (err) {
-          console.warn('状态同步失败，使用保守策略');
-          // 如果失败，根据数据库数据推断
-          setUserLiked(article.like_count > 0 && article.user_id === user.id);
+          console.warn('状态同步失败，使用保守策略:', err);
+          // 容错处理：根据文章数据和用户信息智能推断
+          const inferredStatus = article.like_count > 0 && article.user_id === user.id;
+          if (inferredStatus !== userLiked) {
+            setUserLiked(inferredStatus);
+          }
         }
       };
       
-      // 立即执行一次状态同步
+      // 立即执行首次检查
       checkAndSyncStatus();
       
-      // 每5秒自动同步一次，确保状态最新
-      const interval = setInterval(checkAndSyncStatus, 5000);
-      return () => clearInterval(interval);
+      // 设置固定10秒间隔的定时器
+      intervalId = setInterval(checkAndSyncStatus, 10000);
+      
+      // 清理函数
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
     }
   }, [article, isAuthenticated, user]);
 
