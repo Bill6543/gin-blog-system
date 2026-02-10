@@ -5,7 +5,7 @@ import (
 	"gin-blog-system/middleware"
 	_ "gin-blog-system/model"
 	"gin-blog-system/router"
-	"github.com/gin-contrib/cors" // 添加 CORS 导入
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +31,7 @@ func main() {
 
 	// 👇 添加 CORS 中间件（关键修复）
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:3002"},
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3004"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		AllowCredentials: true,

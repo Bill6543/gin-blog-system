@@ -10,8 +10,21 @@ import (
 
 // RegisterAuthRoutes 注册认证相关路由
 func RegisterAuthRoutes(rg *gin.RouterGroup) {
+	// 测试路由：直接在/api下添加登录路由（临时）
+	rg.POST("/test-login", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "test login success"})
+	})
+
 	auth := rg.Group("/auth")
 	{
+		auth.OPTIONS("/login", func(c *gin.Context) {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+			c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization, X-Requested-With")
+			c.Header("Access-Control-Allow-Credentials", "true")
+			c.Status(200)
+		})
+
 		auth.POST("/login", func(c *gin.Context) {
 			var loginInfo struct {
 				Username string `json:"username" binding:"required"`

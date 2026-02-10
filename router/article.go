@@ -294,5 +294,31 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 
 			utils.Success(c, updatedArticle)
 		})
+
+		// 检查用户是否已点赞
+		article.GET("/:id/like/status", func(c *gin.Context) {
+			idParam := c.Param("id")
+			id, err := strconv.ParseUint(idParam, 10, 32)
+			if err != nil {
+				utils.Error(c, http.StatusBadRequest, "无效的文章ID")
+				return
+			}
+
+			// 获取用户ID（从中间件设置的上下文）
+			userID, exists := c.Get("user_id")
+			if !exists {
+				utils.Error(c, http.StatusUnauthorized, "请先登录")
+				return
+			}
+
+			// 检查用户是否已点赞过
+			userLike, err := service.CheckUserLiked(userID.(uint), uint(id))
+			if err != nil {
+				utils.Error(c, http.StatusInternalServerError, "检查点赞状态失败: "+err.Error())
+				return
+			}
+
+			utils.Success(c, map[string]bool{"is_liked": userLike})
+		})
 	}
 }
