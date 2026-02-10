@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API连接测试</title>
+</head>
+<body>
+    <h1>API连接测试</h1>
+    <button onclick="runTest()">运行测试</button>
+    <div id="output"></div>
+
+    <script src="/api-test.js"></script>
+    <script>
+        function runTest() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>测试运行中...</p>';
+            
+            testApiConnection().then(() => {
+                output.innerHTML += '<p>测试完成</p>';
+            }).catch(error => {
+                output.innerHTML += `<p>测试出错: ${error.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>

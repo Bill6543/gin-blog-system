@@ -33,26 +33,39 @@ const ArticleList = () => {
   
   const navigate = useNavigate()
 
+  console.log('ArticleList组件渲染，当前状态:', { 
+    articles: articles.length, 
+    loading, 
+    page, 
+    total 
+  })
+
   useEffect(() => {
+    console.log('useEffect触发，准备调用fetchArticles')
     fetchArticles()
-  }, [page])
+  }, [page, pageSize])
 
   const fetchArticles = async () => {
     setLoading(true)
     setError('')
     
     try {
+      console.log('开始调用文章列表API...')
       // 先尝试调用真实API
       const response = await articleApi.getArticles({ page, page_size: pageSize })
       
+      console.log('API响应:', response)
+      
       if (response.data.code === 200) {
+        console.log('API调用成功，获取到真实数据:', response.data.data.articles)
         setArticles(response.data.data.articles)
         setTotal(response.data.data.total)
       } else {
         throw new Error(response.data.msg || '获取文章列表失败')
       }
     } catch (err: any) {
-      console.log('API调用失败，使用测试数据:', err.message)
+      console.error('API调用失败:', err)
+      console.log('使用测试数据作为回退方案')
       // 使用测试数据
       const { testArticles } = generateTestData()
       setArticles(testArticles)

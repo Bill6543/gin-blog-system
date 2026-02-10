@@ -12,16 +12,18 @@ const apiClient: AxiosInstance = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    console.log('发送请求:', config.method?.toUpperCase(), config.url, config.params)
     // 从localStorage获取token
     const token = localStorage.getItem('token')
     // 排除不需要认证的接口
-    const noAuthEndpoints = ['/auth/login', '/auth/register', '/auth/logout'];
+    const noAuthEndpoints = ['/auth/login', '/auth/register', '/auth/logout', '/articles'];
     if (token && !noAuthEndpoints.some(endpoint => config.url?.endsWith(endpoint))) {
       config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
   (error) => {
+    console.error('请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )
@@ -29,10 +31,12 @@ apiClient.interceptors.request.use(
 // 响应拦截器 - 简化处理，只做错误处理
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
+    console.log('收到响应:', response.status, response.data)
     // 直接返回完整的response对象，让业务层处理数据格式
     return response;
   },
   (error) => {
+    console.error('响应错误:', error.response?.status, error.response?.data || error.message)
     // 统一错误处理
     if (error.response) {
       const { status, data } = error.response;

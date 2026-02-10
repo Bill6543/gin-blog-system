@@ -15,76 +15,82 @@ import (
 
 // RegisterArticleRoutes 注册文章相关路由
 func RegisterArticleRoutes(rg *gin.RouterGroup) {
-	article := rg.Group("/articles", middleware.AuthMiddleware())
-	{
-		// 获取文章列表
-		article.GET("", func(c *gin.Context) {
-			pageStr := c.DefaultQuery("page", "1")
-			pageSizeStr := c.DefaultQuery("page_size", "10")
+	// 临时结构体用于接收包含TagIDs的请求
+	type ArticleRequest struct {
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		Summary    string `json:"summary"`
+		Cover      string `json:"cover"`
+		Status     int    `json:"status"`
+		CategoryID uint   `json:"category_id"`
+		TagIDs     []uint `json:"tag_ids,omitempty"`
+	}
 
-			page, _ := strconv.Atoi(pageStr)
-			pageSize, _ := strconv.Atoi(pageSizeStr)
-
-			if page < 1 {
-				page = 1
-			}
-			if pageSize < 1 || pageSize > 100 {
-				pageSize = 10
-			}
-
-			articles, total, err := service.GetAllArticles(page, pageSize)
-			if err != nil {
-				utils.Error(c, http.StatusInternalServerError, "获取文章列表失败")
-				return
-			}
-
-			response := map[string]interface{}{
-				"articles":  articles,
-				"total":     total,
-				"page":      page,
-				"page_size": pageSize,
-			}
-			utils.Success(c, response)
-		})
-
-		// 根据ID获取单篇文章
-		article.GET("/:id", func(c *gin.Context) {
-			idParam := c.Param("id")
-			id, err := strconv.ParseUint(idParam, 10, 32)
-			if err != nil {
-				utils.Error(c, http.StatusBadRequest, "无效的文章ID")
-				return
-			}
-
-			// 先增加浏览量
-			updateResult := config.DB.Model(&model.Article{}).Where("id = ?", id).UpdateColumn("view_count", gorm.Expr("view_count + ?", 1))
-			if updateResult.Error != nil {
-				utils.Error(c, http.StatusInternalServerError, "更新浏览量失败: "+updateResult.Error.Error())
-				return
-			}
-
-			article, err := service.GetArticleByID(uint(id))
-			if err != nil {
-				utils.Error(c, http.StatusNotFound, err.Error())
-				return
-			}
-
-			utils.Success(c, article)
-		})
-
-		// 临时结构体用于接收包含TagIDs的请求
-		type ArticleRequest struct {
-			Title      string `json:"title"`
-			Content    string `json:"content"`
-			Summary    string `json:"summary"`
-			Cover      string `json:"cover"`
-			Status     int    `json:"status"`
-			CategoryID uint   `json:"category_id"`
-			TagIDs     []uint `json:"tag_ids,omitempty"`
+	// 公开访问的文章路由（无需认证）
+	// 获取文章列表（公开）
+	rg.GET("/articles", func(c *gin.Context) {
+		pageStr := c.DefaultQuery("page", "1")
+		pageSizeStr := c.DefaultQuery("page_size", "10")
+		// 兼容前端传来的 pageSize 参数（驼峰命名）
+		if pageSizeStr == "10" {
+			pageSizeStr = c.DefaultQuery("pageSize", "10")
 		}
 
+		page, _ := strconv.Atoi(pageStr)
+		pageSize, _ := strconv.Atoi(pageSizeStr)
+
+		if page < 1 {
+			page = 1
+		}
+		if pageSize < 1 || pageSize > 100 {
+			pageSize = 10
+		}
+
+		articles, total, err := service.GetAllArticles(page, pageSize)
+		if err != nil {
+			utils.Error(c, http.StatusInternalServerError, "获取文章列表失败")
+			return
+		}
+
+		response := map[string]interface{}{
+			"articles":  articles,
+			"total":     total,
+			"page":      page,
+			"page_size": pageSize,
+		}
+		utils.Success(c, response)
+	})
+
+	// 根据ID获取单篇文章（公开）
+	rg.GET("/articles/:id", func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := strconv.ParseUint(idParam, 10, 32)
+		if err != nil {
+			utils.Error(c, http.StatusBadRequest, "无效的文章ID")
+			return
+		}
+
+		// 先增加浏览量
+		updateResult := config.DB.Model(&model.Article{}).Where("id = ?", id).UpdateColumn("view_count", gorm.Expr("view_count + ?", 1))
+		if updateResult.Error != nil {
+			utils.Error(c, http.StatusInternalServerError, "更新浏览量失败: "+updateResult.Error.Error())
+			return
+		}
+
+		article, err := service.GetArticleByID(uint(id))
+		if err != nil {
+			utils.Error(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		utils.Success(c, article)
+	})
+
+	// 需要认证的操作
+	articleAuth := rg.Group("/articles", middleware.AuthMiddleware())
+	{
 		// 创建文章
-		article.POST("", func(c *gin.Context) {
+		articleAuth.POST("", func(c *gin.Context) {
 			var req ArticleRequest
 			if err := c.ShouldBindJSON(&req); err != nil {
 				utils.Error(c, http.StatusBadRequest, "参数绑定失败: "+err.Error())
@@ -135,7 +141,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 		})
 
 		// 更新文章
-		article.PUT("/:id", func(c *gin.Context) {
+		articleAuth.PUT("/:id", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
@@ -193,7 +199,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 		})
 
 		// 删除文章
-		article.DELETE("/:id", func(c *gin.Context) {
+		articleAuth.DELETE("/:id", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
@@ -210,7 +216,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 		})
 
 		// 点赞文章
-		article.POST("/:id/like", func(c *gin.Context) {
+		articleAuth.POST("/:id/like", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
@@ -253,7 +259,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 		})
 
 		// 取消点赞
-		article.DELETE("/:id/like", func(c *gin.Context) {
+		articleAuth.DELETE("/:id/like", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
@@ -296,7 +302,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 		})
 
 		// 检查用户是否已点赞
-		article.GET("/:id/like/status", func(c *gin.Context) {
+		articleAuth.GET("/:id/like/status", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
