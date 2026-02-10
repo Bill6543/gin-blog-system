@@ -1,0 +1,28 @@
+/* 全局样式重置 */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 确保根容器撑满整个视口 */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 主内容区域 - 允许滚动 */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+}
+
+/* 文章列表容器 - 确保能滚动 */
+.article-list-container {
+  min-height: 100%;
+  padding: 20px;
+}

@@ -1,0 +1,545 @@
+/* === 注册页面滚动修复 === */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.register-container {
+  min-height: 100vh;
+  display: block;
+  padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.register-form-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 20px auto;
+}
+
+/* 背景图设置 */
+body {
+  background: url('/static/2026/02/09/1770605592_g9xbTbWU.jpg') no-repeat;
+  background-size: 100% 100%;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.register-form-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 20px auto;
+  overflow-y: visible;
+}
+
+/* 头像上传区域 */
+.avatar-upload-container {
+  text-align: center;
+  margin: 0 auto 12px;
+}
+
+.avatar-placeholder {
+  width: 90px; /* 减小头像尺寸 */
+  height: 90px;
+  margin: 0 auto 8px;
+}
+
+/* 输入框 */
+.form-group input {
+  width: 100%;
+  padding: 8px 10px; /* 减小内边距 */
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 13px; /* 减小字体 */
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* 注册按钮 */
+.register-button {
+  width: 100%;
+  padding: 10px; /* 减小按钮高度 */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 5px; /* 减小圆角 */
+  font-size: 13px; /* 减小字体 */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 6px;
+}
+
+/* 表单组间距 */
+.form-group {
+  margin-bottom: 15px; /* 减小间距 */
+}
+
+/* 标题和副标题调整 */
+.register-header h1 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 28px;
+  text-align: center;
+}
+
+.register-header p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c62828;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px; /* 减小内边距 */
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px; /* 减小字体 */
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* 头像上传样式 */
+.avatar-upload {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.avatar-upload label {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.avatar-upload-container {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-placeholder {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto 15px;
+}
+
+.avatar-placeholder:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.avatar-placeholder-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+  color: #999;
+}
+
+.avatar-placeholder p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.avatar-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-preview-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #667eea;
+}
+
+.avatar-btn, .remove-avatar-btn {
+  border: 2px solid;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 0 5px;
+}
+
+.avatar-btn {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.avatar-btn:hover {
+  background: #5a6ee0;
+  color: white;
+}
+
+.remove-avatar-btn {
+  background: transparent;
+  color: #ff4757;
+  border-color: #ff4757;
+}
+
+.remove-avatar-btn:hover {
+  background: #ff4757;
+  color: white;
+}
+
+.avatar-file-input {
+  display: none;
+}
+
+.avatar-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.avatar-hint {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.register-button {
+  width: 100%;
+  padding: 12px; /* 减小按钮高度 */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px; /* 减小圆角 */
+  font-size: 14px; /* 减小字体 */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.register-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.register-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.register-footer {
+  text-align: center;
+  margin-top: 25px;
+  color: #666;
+}
+
+.register-footer a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+.register-success {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.success-icon {
+  font-size: 48px;
+  color: #4caf50;
+  margin-bottom: 20px;
+}
+
+.register-success h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.register-success p {
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.login-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.login-link:hover {
+  background: #5a6ee0;
+}
+
+/* === 背景图设置 === */
+body {
+  background: url('/static/2026/02/09/1770605592_g9xbTbWU.jpg') no-repeat;
+  background-size: 100% 100%;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.register-form-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 20px auto;
+  overflow-y: visible;
+}
+
+.register-header p {
+  color: #667eea;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(45deg, #667eea, #764ba2, #ff4757);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-top: 8px;
+}
+
+/* 头像上传样式 */
+.avatar-upload {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.avatar-upload label {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.avatar-upload-container {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-placeholder {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto 15px;
+}
+
+.avatar-placeholder:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.avatar-placeholder-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+  color: #999;
+}
+
+.avatar-placeholder p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.avatar-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-preview-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #667eea;
+}
+
+/* 统一按钮样式 - 除了颜色和内容外其他都相同 */
+.avatar-btn, .remove-avatar-btn {
+  border: 2px solid;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 0 5px;
+}
+
+.avatar-btn {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.avatar-btn:hover {
+  background: #5a6ee0;
+  color: white;
+}
+
+.remove-avatar-btn {
+  background: transparent;
+  color: #ff4757;
+  border-color: #ff4757;
+}
+
+.remove-avatar-btn:hover {
+  background: #ff4757;
+  color: white;
+}
+
+.avatar-file-input {
+  display: none;
+}
+
+.avatar-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.avatar-hint {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+/* 表单优化 */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 500;
+  font-size: 16px;
+  text-align: left;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* 头像上传优化 */
+.avatar-upload-container {
+  text-align: center;
+}
+
+.avatar-placeholder {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
+}
+
+/* 注册按钮优化 */
+.register-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none}
