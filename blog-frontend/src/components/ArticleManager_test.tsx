@@ -8,28 +8,15 @@ interface ArticleManagerProps {
   onCreate?: () => void
 }
 
-const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
+const ArticleManagerTest = ({ onEdit, onCreate }: ArticleManagerProps) => {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [page, setPage] = useState(1)
-  const [total, setTotal] = useState(0)
   const pageSize = 10
 
   useEffect(() => {
     fetchArticles()
-    
-    // 监听文章更新事件
-    const handleArticleUpdated = () => {
-      fetchArticles()
-    }
-    
-    window.addEventListener('articleUpdated', handleArticleUpdated)
-    
-    // 清理事件监听器
-    return () => {
-      window.removeEventListener('articleUpdated', handleArticleUpdated)
-    }
   }, [page])
 
   const fetchArticles = async () => {
@@ -37,18 +24,45 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
     setError('')
     
     try {
-      const response = await articleApi.getArticles({ page, page_size: pageSize })
+      // 测试数据 - 直接使用硬编码数据来验证按钮是否显示
+      const testArticles: Article[] = [
+        {
+          id: 1,
+          title: "JWT介绍",
+          summary: "这是一个对JWT简单介绍...",
+          content: "",
+          status: 1,
+          view_count: 273,
+          like_count: 3,
+          comment_count: 7,
+          created_at: "2024-01-01T12:00:00Z",
+          updated_at: "2024-01-01T12:00:00Z",
+          user: { id: 1, username: "Bill", nickname: "Bill", avatar: "" },
+          category: { id: 1, name: "技术分享", description: "" },
+          tags: [{ id: 1, name: "后端", color: "#667eea" }]
+        },
+        {
+          id: 2,
+          title: "Invalidate Caches",
+          summary: "解决IDEA胡乱报错...",
+          content: "",
+          status: 1,
+          view_count: 86,
+          like_count: 2,
+          comment_count: 1,
+          created_at: "2024-01-02T12:00:00Z",
+          updated_at: "2024-01-02T12:00:00Z",
+          user: { id: 1, username: "Bill", nickname: "Bill", avatar: "" },
+          category: { id: 2, name: "技术分享", description: "" },
+          tags: [{ id: 2, name: "Go语言", color: "#4caf50" }, { id: 3, name: "后端", color: "#667eea" }]
+        }
+      ]
       
-      if (response.data.code === 200) {
-        setArticles(response.data.data.articles)
-        setTotal(response.data.data.total)
-      } else {
-        throw new Error(response.data.msg || '获取文章列表失败')
-      }
+      setArticles(testArticles)
+      setLoading(false)
     } catch (err: any) {
       console.error('获取文章失败:', err)
       setError('获取文章列表失败: ' + (err.message || '网络错误'))
-    } finally {
       setLoading(false)
     }
   }
@@ -57,41 +71,11 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
     if (!window.confirm('确定要删除这篇文章吗？')) {
       return
     }
-
-    try {
-      const response = await articleApi.deleteArticle(articleId)
-      if (response.data.code === 200) {
-        // 成功后刷新列表
-        fetchArticles()
-        alert('文章删除成功')
-      } else {
-        throw new Error(response.data.msg || '删除失败')
-      }
-    } catch (err: any) {
-      console.error('删除文章失败:', err)
-      alert('删除失败: ' + (err.message || '未知错误'))
-    }
+    alert(`删除文章 ${articleId}`)
   }
 
   const handleStatusChange = async (articleId: number, currentStatus: number) => {
-    try {
-      // 计算新的状态值：如果当前是已发布(1)，则设为草稿(0)；如果当前是草稿(0)，则设为发布(1)
-      const newStatus = currentStatus === 1 ? 0 : 1;
-      
-      // 调用更新文章API，只更新状态字段
-      const response = await articleApi.updateArticle(articleId, { status: newStatus });
-      
-      if (response.data.code === 200) {
-        // 成功后刷新列表
-        fetchArticles();
-        alert(`文章状态已更新为: ${newStatus === 1 ? '已发布' : '草稿'}`);
-      } else {
-        throw new Error(response.data.msg || '状态更新失败');
-      }
-    } catch (err: any) {
-      console.error('更新状态失败:', err);
-      alert('状态更新失败: ' + (err.message || '未知错误'));
-    }
+    alert(`更新文章 ${articleId} 状态为: ${currentStatus === 1 ? '草稿' : '发布'}`)
   }
 
   const formatDate = (dateString: string) => {
@@ -132,7 +116,7 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
     <div className="article-manager">
       {/* 操作栏 */}
       <div className="manager-header">
-        <h2>文章管理</h2>
+        <h2>文章管理 (测试版)</h2>
         <div className="header-actions">
           <button 
             className="btn btn-primary"
@@ -146,7 +130,7 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
       {/* 统计信息 */}
       <div className="stats-bar">
         <div className="stat-item">
-          <span className="stat-number">{total}</span>
+          <span className="stat-number">{articles.length}</span>
           <span className="stat-label">总文章数</span>
         </div>
         <div className="stat-item">
@@ -193,7 +177,7 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
                     </div>
                   )}
                 </td>
-                <td>{article.user?.nickname || article.user?.username || '-'}</td>
+                <td>{article.user.nickname || article.user.username}</td>
                 <td>{article.category?.name || '-'}</td>
                 <td>
                   <div className="tags-cell">
@@ -220,26 +204,23 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
                   </span>
                 </td>
                 <td>{formatDate(article.created_at)}</td>
-                <td style={{ width: '180px', minWidth: '180px', paddingRight: '20px' }}>
-                  <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
+                <td>
+                  <div className="action-buttons">
                     <button
                       className="btn btn-sm btn-primary"
                       onClick={() => onEdit && onEdit(article)}
-                      style={{ flex: '1', minWidth: '50px' }}
                     >
                       编辑
                     </button>
                     <button
                       className="btn btn-sm btn-warning"
                       onClick={() => handleStatusChange(article.id, article.status)}
-                      style={{ flex: '1', minWidth: '70px' }}
                     >
                       {article.status === 1 ? '设为草稿' : '发布'}
                     </button>
                     <button
                       className="btn btn-sm btn-danger"
                       onClick={() => handleDelete(article.id)}
-                      style={{ flex: '1', minWidth: '50px' }}
                     >
                       删除
                     </button>
@@ -250,31 +231,8 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
           </tbody>
         </table>
       </div>
-
-      {/* 分页 */}
-      {total > pageSize && (
-        <div className="pagination-controls">
-          <button 
-            className="btn btn-secondary"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-          >
-            上一页
-          </button>
-          <span className="page-info">
-            第 {page} 页，共 {Math.ceil(total / pageSize)} 页
-          </span>
-          <button 
-            className="btn btn-secondary"
-            onClick={() => setPage(p => Math.min(Math.ceil(total / pageSize), p + 1))}
-            disabled={page === Math.ceil(total / pageSize)}
-          >
-            下一页
-          </button>
-        </div>
-      )}
     </div>
   )
 }
 
-export default ArticleManager
+export default ArticleManagerTest

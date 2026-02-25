@@ -53,6 +53,7 @@
   background: white;
   border-right: 1px solid #e1e5e9;
   box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  padding-top: 80px;
 }
 
 .nav-menu {
@@ -97,6 +98,8 @@
   box-sizing: border-box;
   /* 强制顶部间距，确保不被导航栏遮挡 */
   margin-top: 70px !important;
+  width: 944px;
+  margin: 0 auto;
 }
 
 .tab-content {

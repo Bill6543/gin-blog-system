@@ -21,8 +21,8 @@ const Navbar = () => {
     }
   }
 
-  // 判断是否在文章详情页
-  const isArticleDetailPage = location.pathname.startsWith('/article/')
+  // 所有页面都使用半透明导航栏效果
+  const isArticleDetailPage = true
 
   return (
     <nav 
@@ -35,17 +35,13 @@ const Navbar = () => {
         left: '0',
         width: '100%',
         height: '80px',
-        background: isArticleDetailPage 
-          ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%)' 
-          : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%)',
         color: 'white',
         display: isAuthenticated ? 'block' : 'none',
         zIndex: '1000',
-        boxShadow: isArticleDetailPage 
-          ? '0 2px 10px rgba(0,0,0,0.05)' 
-          : '0 2px 10px rgba(0,0,0,0.2)',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
         padding: '0 20px',
-        backdropFilter: isArticleDetailPage ? 'blur(10px)' : 'none',
+        backdropFilter: 'blur(10px)',
         opacity: isHovered ? 1 : 0,
         transition: 'opacity 0.3s ease',
         overflow: 'hidden'
@@ -71,28 +67,52 @@ const Navbar = () => {
         transform: 'translateY(-50%)',
         display: 'flex', 
         alignItems: 'center', 
-        gap: '20px'
+        gap: '15px'
       }}>
         <span style={{ color: 'white', fontSize: '16px' }}>
           欢迎，{user?.nickname || user?.username}
         </span>
-        <button 
-          onClick={() => window.location.href = '/admin'}
-          style={{
-            background: '#4CAF50',
-            color: 'white',
-            border: '2px solid #4CAF50',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: '600',
-            minWidth: '120px',
-            marginRight: '10px'
-          }}
-        >
-          管理后台
-        </button>
+        {/* 管理后台按钮 - 仅在非后台页面显示 */}
+        {!location.pathname.startsWith('/admin') && (
+          <button 
+            onClick={() => window.location.href = '/admin'}
+            style={{
+              background: '#4CAF50',
+              color: 'white',
+              border: '2px solid #4CAF50',
+              padding: '10px 20px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: '600',
+              minWidth: '120px',
+              marginRight: '10px'
+            }}
+          >
+            管理后台
+          </button>
+        )}
+        {/* 返回文章列表按钮 - 仅在后台页面显示 */}
+        {location.pathname.startsWith('/admin') && (
+          <button 
+            onClick={() => window.location.href = '/'}
+            style={{
+              background: '#667eea',
+              color: 'white',
+              border: '2px solid #667eea',
+              padding: '10px 20px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: '600',
+              minWidth: '120px',
+              marginRight: '10px'
+            }}
+          >
+            返回文章列表
+          </button>
+        )}
+        {/* 退出登录按钮 - 始终显示 */}
         <button 
           onClick={handleLogout}
           style={{

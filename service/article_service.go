@@ -17,6 +17,11 @@ func CreateArticle(article *model.Article) error {
 		}
 	}()
 
+	// 确保状态值有效
+	if article.Status != 0 && article.Status != 1 {
+		article.Status = 1 // 默认发布
+	}
+
 	// 如果封面为空，则使用默认封面
 	if article.Cover == "" {
 		article.Cover = "/static/default_cover.png"
@@ -29,19 +34,22 @@ func CreateArticle(article *model.Article) error {
 		return result.Error
 	}
 
-	// 处理标签关联（多对多）- 使用关联的Tags
+	// 处理标签关联（多对多）- 先删除现有关联，再创建新关联
 	if len(article.Tags) > 0 {
+		// 删除现有的标签关联
+		deleteResult := tx.Where("article_id = ?", article.ID).Delete(&model.ArticleTag{})
+		if deleteResult.Error != nil {
+			tx.Rollback()
+			return deleteResult.Error
+		}
+
+		// 创建新的标签关联
 		var articleTags []model.ArticleTag
 		for _, tag := range article.Tags {
-			// 检查关联是否已存在，避免重复插入
-			var count int64
-			tx.Model(&model.ArticleTag{}).Where("tag_id = ? AND article_id = ?", tag.ID, article.ID).Count(&count)
-			if count == 0 {
-				articleTags = append(articleTags, model.ArticleTag{
-					TagID:     tag.ID,
-					ArticleID: article.ID,
-				})
-			}
+			articleTags = append(articleTags, model.ArticleTag{
+				TagID:     tag.ID,
+				ArticleID: article.ID, // 此时文章ID已分配
+			})
 		}
 		if len(articleTags) > 0 {
 			result = tx.Create(&articleTags)

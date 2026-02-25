@@ -349,15 +349,19 @@ Authorization: Bearer <token>
 }
 ```
 
-## 🔧 状态码说明
+## 🔧 HTTP状态码说明
 
-| 状态码 | 说明 |
-|--------|------|
-| 200 | 请求成功 |
-| 400 | 请求参数错误 |
-| 401 | 未授权/Token失效 |
-| 404 | 资源不存在 |
-| 500 | 服务器内部错误 |
+| 状态码 | 说明 | 应用场景 |
+|--------|------|----------|
+| 200 | 请求成功 | 正常的数据获取和操作 |
+| 201 | 创建成功 | 资源创建操作 |
+| 400 | 请求参数错误 | 参数缺失、格式错误或验证失败 |
+| 401 | 未授权/Token失效 | 认证失败或token过期 |
+| 403 | 禁止访问 | 权限不足 |
+| 404 | 资源不存在 | 请求的资源未找到 |
+| 409 | 资源冲突 | 如用户名或邮箱已存在 |
+| 500 | 服务器内部错误 | 系统异常或数据库错误 |
+| 503 | 服务不可用 | 数据库连接失败等 |
 
 ## 📱 前端集成要点
 
@@ -368,10 +372,109 @@ Authorization: Bearer <token>
 5. **分页处理**: 支持page和page_size参数
 6. **时间格式**: 后端返回自定义格式的时间字符串
 
-## 🚀 开发建议
+## 🚀 最佳实践和开发建议
 
-1. 创建API客户端封装所有请求
-2. 使用TypeScript定义接口响应类型
-3. 实现全局错误处理和loading状态
-4. 图片上传前进行压缩和格式验证
-5. 实现防抖和节流优化用户体验
+### API客户端封装
+```typescript
+// api/client.ts
+import axios from 'axios';
+
+class ApiClient {
+  private baseUrl = 'http://localhost:8080/api';
+  
+  private async request<T>(config: any): Promise<T> {
+    try {
+      const response = await axios({
+        baseURL: this.baseUrl,
+        ...config
+      });
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  
+  // 文章相关接口
+  articles = {
+    list: (params?: any) => this.request({ method: 'GET', url: '/articles', params }),
+    detail: (id: number) => this.request({ method: 'GET', url: `/articles/${id}` }),
+    create: (data: any) => this.request({ method: 'POST', url: '/articles', data }),
+    update: (id: number, data: any) => this.request({ method: 'PUT', url: `/articles/${id}`, data }),
+    delete: (id: number) => this.request({ method: 'DELETE', url: `/articles/${id}` })
+  };
+}
+
+export const api = new ApiClient();
+```
+
+### TypeScript类型定义
+```typescript
+// types/index.ts
+export interface Article {
+  id: number;
+  title: string;
+  content: string;
+  summary: string;
+  cover?: string;
+  status: number;
+  view_count: number;
+  like_count: number;
+  comment_count: number;
+  user_id: number;
+  category_id: number;
+  created_at: string;
+  updated_at: string;
+  user?: User;
+  category?: Category;
+  tags?: Tag[];
+}
+
+export interface ApiResponse<T> {
+  code: number;
+  data: T;
+  msg: string;
+}
+```
+
+### 全局状态管理
+```typescript
+// hooks/useAuth.ts
+import { useState, useEffect } from 'react';
+
+interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+  token: string | null;
+}
+
+export const useAuth = () => {
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+    user: null,
+    token: localStorage.getItem('token')
+  });
+  
+  useEffect(() => {
+    if (authState.token) {
+      // 验证token有效性
+      validateToken(authState.token);
+    }
+  }, [authState.token]);
+  
+  return authState;
+};
+```
+
+### 性能优化建议
+1. **防抖处理**: 搜索框输入使用防抖
+2. **懒加载**: 图片和组件使用懒加载
+3. **缓存策略**: 合理使用浏览器缓存
+4. **代码分割**: 按路由分割代码包
+5. **请求合并**: 相关请求合并减少网络开销
+
+### 安全注意事项
+1. **XSS防护**: 对用户输入内容进行转义
+2. **CSRF保护**: 实现token验证机制
+3. **文件验证**: 严格验证上传文件类型和大小
+4. **权限控制**: 前端配合后端进行权限验证
+5. **敏感信息**: 避免在前端存储敏感信息

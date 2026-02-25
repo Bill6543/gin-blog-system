@@ -9,7 +9,7 @@ export const uploadApi = {
     formData.append('file', file)
     
     return apiClient.post<ApiResponse<{ url: string; filePath: string }>>(
-      '/api/upload/image',  // 修复：添加完整的/api前缀
+      '/upload/image',
       formData,
       {
         headers: {
@@ -25,7 +25,7 @@ export const uploadApi = {
     formData.append('file', file)
     
     return apiClient.post<ApiResponse<{ url: string; filePath: string }>>(
-      '/api/upload/file',  // 修复：添加完整的/api前缀
+      '/upload/file',
       formData,
       {
         headers: {

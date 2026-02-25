@@ -77,11 +77,20 @@ func addStaticPrefix(path string) string {
 	if path == "" {
 		return "/static/default_cover.png"
 	}
-	// 如果已经是完整路径，直接返回
+	// 清理路径中的多余斜杠
+	// 移除开头的所有斜杠
+	path = strings.TrimLeft(path, "/")
+	// 移除任何 static/ 前缀
+	path = strings.TrimPrefix(path, "static/")
+
+	// 如果已经是 /static/ 开头，直接返回（但先清理双斜杠）
 	if strings.HasPrefix(path, "/static/") {
+		// 清理可能的双斜杠
+		path = strings.ReplaceAll(path, "//", "/")
 		return path
 	}
-	// 添加前缀（注意：Gin静态文件配置为 r.Static("/static", "./static/uploads")）
+
+	// 添加前缀
 	return "/static/" + path
 }
 

@@ -5,7 +5,6 @@ import (
 	"gin-blog-system/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"path/filepath"
 )
 
 // RegisterUploadRoutes 注册上传相关路由
@@ -34,7 +33,7 @@ func RegisterUploadRoutes(rg *gin.RouterGroup) {
 			}
 
 			// 返回文件访问URL
-			accessURL := filepath.Join("/static", filePath)
+			accessURL := filePath
 			response := map[string]string{
 				"url":      accessURL,
 				"filePath": filePath,
@@ -64,7 +63,7 @@ func RegisterUploadRoutes(rg *gin.RouterGroup) {
 			}
 
 			// 返回文件访问URL
-			accessURL := filepath.Join("/static", filePath)
+			accessURL := filePath
 			response := map[string]string{
 				"url":      accessURL,
 				"filePath": filePath,

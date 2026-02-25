@@ -16,7 +16,7 @@ apiClient.interceptors.request.use(
     // 从localStorage获取token
     const token = localStorage.getItem('token')
     // 排除不需要认证的接口
-    const noAuthEndpoints = ['/auth/login', '/auth/register', '/auth/logout', '/articles'];
+    const noAuthEndpoints = ['/auth/login', '/auth/register', '/auth/logout'];
     if (token && !noAuthEndpoints.some(endpoint => config.url?.endsWith(endpoint))) {
       config.headers.Authorization = `Bearer ${token}`
     }

@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import ArticleManager from '../components/ArticleManager'
+import ArticleManagerTest from '../components/ArticleManager_test'
 import ArticleEditor from '../components/ArticleEditor'
+import CategoryManager from '../components/CategoryManager'
+import TagManager from '../components/TagManager'
 import { Article } from '../types'
+import { articleApi } from '../api/article'
 import './AdminDashboard.css'
 
 const AdminDashboard = () => {
@@ -32,19 +36,20 @@ const AdminDashboard = () => {
 
   const handleSaveArticle = async (articleData: Partial<Article>) => {
     try {
+      let result;
       if (editingArticle) {
         // 编辑文章
-        await articleApi.updateArticle(editingArticle.id, articleData)
+        result = await articleApi.updateArticle(editingArticle.id, articleData)
         alert('文章更新成功！')
       } else {
         // 创建文章
-        await articleApi.createArticle(articleData)
+        result = await articleApi.createArticle(articleData)
         alert('文章创建成功！')
       }
       setShowEditor(false)
       setEditingArticle(null)
-      // 刷新文章列表
-      window.location.reload()
+      // 触发自定义事件通知ArticleManager组件刷新数据
+      window.dispatchEvent(new CustomEvent('articleUpdated'))
     } catch (err: any) {
       throw new Error(err.message || '操作失败')
     }
@@ -66,18 +71,13 @@ const AdminDashboard = () => {
         )
       case 'categories':
         return (
-          <div className="tab-content">
-            <h2>分类管理</h2>
-            <p>这里将显示分类管理功能</p>
-          </div>
+          <CategoryManager />
         )
       case 'tags':
         return (
-          <div className="tab-content">
-            <h2>标签管理</h2>
-            <p>这里将显示标签管理功能</p>
-          </div>
+          <TagManager />
         )
+
       case 'stats':
         return (
           <div className="tab-content">
@@ -92,7 +92,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      {/* 顶部导航 */}
+      {/* 顶部导航 - 注释掉管理后台的独立导航栏，使用全局导航栏 */}
+      {/* 
       <nav 
         className="admin-nav"
         onMouseEnter={() => setIsHovered(true)}
@@ -121,6 +122,7 @@ const AdminDashboard = () => {
           </button>
         </div>
       </nav>
+      */}
 
       {/* 主要内容区域 */}
       <div className="admin-main">
@@ -163,7 +165,13 @@ const AdminDashboard = () => {
         </aside>
 
         {/* 内容区域 - 添加顶部间距和滚动支持 */}
-        <main className="content-area" style={{ marginTop: '70px', overflowY: 'auto' }}>
+        <main className="content-area" style={{
+          marginTop: '70px',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          minHeight: '100vh',
+          height: '100vh'
+        }}>
           {renderTabContent()}
         </main>
       </div>

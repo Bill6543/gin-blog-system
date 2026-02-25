@@ -2,6 +2,11 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  padding-top: 100px;
 }
 
 .back-button {
@@ -333,6 +338,172 @@
 .like-button.liked:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* 评论头像样式 */
+.comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* 评论项紧凑布局 */
+.comment-item {
+  padding: 8px 0;
+  background: #fafafa;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  border-bottom: 1px solid #eee;
+}
+
+.comment-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.comment-author-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-author-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 时间右对齐 */
+.comment-date {
+  margin-left: auto;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.comment-author-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.comment-content {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  word-break: break-word;
+  padding-left: 48px;
+  text-align: left;
+}
+
+/* 评论回复相关样式 */
+
+.reply-prefix {
+  color: #666;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+.connection-line {
+  color: #999;
+  font-family: monospace;
+  margin-right: 8px;
+  white-space: nowrap;
+  display: inline-block;
+  width: 24px;
+  text-align: right;
+}
+
+.connection-line {
+  color: #999;
+  font-family: monospace;
+  margin-right: 8px;
+  white-space: nowrap;
+  display: inline-block;
+  min-width: 24px;
+  text-align: right;
+}
+
+.comment-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+
+.reply-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.reply-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.reply-form {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.reply-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  margin-bottom: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.reply-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.reply-submit-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.reply-cancel-btn {
+  background: #eee;
+  color: #666;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sub-comments {
+  margin-top: 16px;
+  padding-left: 24px;
+  border-left: 2px solid #eee;
 }
 
 /* 响应式设计 */

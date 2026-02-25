@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow-y: hidden; /* 防止全局滚动，让子容器控制滚动 */
 }
 
 h1 {

@@ -22,11 +22,11 @@ export interface Article {
   like_count: number
   comment_count: number
   user_id: number
-  user: User
+  user: UserResponse
   category_id: number
-  category: Category
+  category: CategoryResponse
   tag_ids: number[]
-  tags: Tag[]
+  tags: TagResponse[]
   created_at: string
   updated_at: string
 }
@@ -47,8 +47,39 @@ export interface Tag {
   name: string
   color: string
   status: number
+  article_count?: number
   created_at: string
   updated_at: string
+}
+
+// 后端实际返回的响应类型（首字母大写）
+export interface UserResponse {
+  ID: number
+  Username: string
+  Nickname: string
+  Email: string
+  Avatar: string
+  Status: number
+  CreatedAt: string
+  UpdatedAt: string
+}
+
+export interface CategoryResponse {
+  ID: number
+  Name: string
+  Description: string
+  Status: number
+  CreatedAt: string
+  UpdatedAt: string
+}
+
+export interface TagResponse {
+  ID: number
+  Name: string
+  Color: string
+  Status: number
+  CreatedAt: string
+  UpdatedAt: string
 }
 
 // 评论类型

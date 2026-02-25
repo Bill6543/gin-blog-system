@@ -104,13 +104,19 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				return
 			}
 
+			// 确保状态值有效（0-草稿，1-发布）
+			status := req.Status
+			if status != 0 && status != 1 {
+				status = 1 // 默认发布
+			}
+
 			// 构建文章模型
 			article := model.Article{
 				Title:      req.Title,
 				Content:    req.Content,
 				Summary:    req.Summary,
 				Cover:      req.Cover,
-				Status:     req.Status,
+				Status:     status, // 使用验证后的状态值
 				UserID:     userID.(uint),
 				CategoryID: req.CategoryID,
 			}
@@ -162,16 +168,33 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				return
 			}
 
-			// 构建文章模型
-			articleData := model.Article{
-				Title:      req.Title,
-				Content:    req.Content,
-				Summary:    req.Summary,
-				Cover:      req.Cover,
-				Status:     req.Status,
-				UserID:     userID.(uint),
-				CategoryID: req.CategoryID,
+			// 确保状态值有效（0-草稿，1-发布）
+			status := req.Status
+			if status != 0 && status != 1 {
+				status = 1 // 默认发布
 			}
+
+			// 构建文章模型 - 只更新提供的字段
+			var articleData model.Article
+
+			// 只更新非零值的字段
+			if req.Title != "" {
+				articleData.Title = req.Title
+			}
+			if req.Content != "" {
+				articleData.Content = req.Content
+			}
+			if req.Summary != "" {
+				articleData.Summary = req.Summary
+			}
+			if req.Cover != "" {
+				articleData.Cover = req.Cover
+			}
+			if req.CategoryID != 0 {
+				articleData.CategoryID = req.CategoryID
+			}
+			articleData.Status = status // 状态总是更新（0或1）
+			articleData.UserID = userID.(uint)
 
 			// 如果提供了TagIDs，则加载对应的标签
 			if len(req.TagIDs) > 0 {
@@ -184,9 +207,27 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				articleData.Tags = tags
 			}
 
-			if err := service.UpdateArticle(uint(id), &articleData); err != nil {
-				utils.Error(c, http.StatusInternalServerError, "更新文章失败: "+err.Error())
+			// 使用原始SQL直接更新状态，确保100%可靠
+			result := config.DB.Exec("UPDATE articles SET status = ? WHERE id = ?", status, id)
+			if result.Error != nil {
+				utils.Error(c, http.StatusInternalServerError, "更新文章状态失败: "+result.Error.Error())
 				return
+			}
+
+			// 检查是否真的更新了
+			var updatedStatus int
+			err = config.DB.Raw("SELECT status FROM articles WHERE id = ?", id).Scan(&updatedStatus).Error
+			if err != nil {
+				utils.Error(c, http.StatusInternalServerError, "检查状态更新失败: "+err.Error())
+				return
+			}
+
+			// 如果状态更新成功，再处理其他字段
+			if req.Title != "" || req.Content != "" || req.Summary != "" || req.Cover != "" || req.CategoryID != 0 {
+				if err := service.UpdateArticle(uint(id), &articleData); err != nil {
+					utils.Error(c, http.StatusInternalServerError, "更新文章其他字段失败: "+err.Error())
+					return
+				}
 			}
 
 			updatedArticle, err := service.GetArticleByID(uint(id))
@@ -212,10 +253,50 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				return
 			}
 
-			utils.Success(c, nil)
+			utils.Success(c, map[string]string{"message": "文章删除成功"})
 		})
 
-		// 点赞文章
+		// 获取当前用户的文章
+		articleAuth.GET("/my", func(c *gin.Context) {
+			userID, exists := c.Get("user_id")
+			if !exists {
+				utils.Error(c, http.StatusUnauthorized, "请先登录")
+				return
+			}
+
+			pageStr := c.DefaultQuery("page", "1")
+			pageSizeStr := c.DefaultQuery("page_size", "10")
+			// 兼容前端传来的 pageSize 参数（驼峰命名）
+			if pageSizeStr == "10" {
+				pageSizeStr = c.DefaultQuery("pageSize", "10")
+			}
+
+			page, _ := strconv.Atoi(pageStr)
+			pageSize, _ := strconv.Atoi(pageSizeStr)
+
+			if page < 1 {
+				page = 1
+			}
+			if pageSize < 1 || pageSize > 100 {
+				pageSize = 10
+			}
+
+			articles, total, err := service.GetArticlesByUser(userID.(uint), page, pageSize)
+			if err != nil {
+				utils.Error(c, http.StatusInternalServerError, "获取用户文章失败")
+				return
+			}
+
+			response := map[string]interface{}{
+				"articles":  articles,
+				"total":     total,
+				"page":      page,
+				"page_size": pageSize,
+			}
+			utils.Success(c, response)
+		})
+
+		// 文章点赞功能
 		articleAuth.POST("/:id/like", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
@@ -224,41 +305,21 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				return
 			}
 
-			// 获取用户ID（从中间件设置的上下文）
 			userID, exists := c.Get("user_id")
 			if !exists {
 				utils.Error(c, http.StatusUnauthorized, "请先登录")
 				return
 			}
 
-			// 检查用户是否已点赞过
-			userLike, err := service.CheckUserLiked(userID.(uint), uint(id))
-			if err != nil {
-				utils.Error(c, http.StatusInternalServerError, "检查点赞状态失败: "+err.Error())
-				return
-			}
-			if userLike {
-				utils.Error(c, http.StatusBadRequest, "您已点赞过该文章")
-				return
-			}
-
-			// 增加点赞
 			if err := service.AddLike(userID.(uint), uint(id)); err != nil {
 				utils.Error(c, http.StatusInternalServerError, "点赞失败: "+err.Error())
 				return
 			}
 
-			// 返回更新后的文章
-			updatedArticle, err := service.GetArticleByID(uint(id))
-			if err != nil {
-				utils.Error(c, http.StatusInternalServerError, "获取文章失败")
-				return
-			}
-
-			utils.Success(c, updatedArticle)
+			utils.Success(c, map[string]string{"message": "点赞成功"})
 		})
 
-		// 取消点赞
+		// 取消文章点赞
 		articleAuth.DELETE("/:id/like", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
@@ -267,42 +328,22 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				return
 			}
 
-			// 获取用户ID（从中间件设置的上下文）
 			userID, exists := c.Get("user_id")
 			if !exists {
 				utils.Error(c, http.StatusUnauthorized, "请先登录")
 				return
 			}
 
-			// 检查用户是否已点赞过
-			userLike, err := service.CheckUserLiked(userID.(uint), uint(id))
-			if err != nil {
-				utils.Error(c, http.StatusInternalServerError, "检查点赞状态失败: "+err.Error())
-				return
-			}
-			if !userLike {
-				utils.Error(c, http.StatusBadRequest, "您尚未点赞该文章")
-				return
-			}
-
-			// 取消点赞
 			if err := service.RemoveLike(userID.(uint), uint(id)); err != nil {
 				utils.Error(c, http.StatusInternalServerError, "取消点赞失败: "+err.Error())
 				return
 			}
 
-			// 返回更新后的文章
-			updatedArticle, err := service.GetArticleByID(uint(id))
-			if err != nil {
-				utils.Error(c, http.StatusInternalServerError, "获取文章失败")
-				return
-			}
-
-			utils.Success(c, updatedArticle)
+			utils.Success(c, map[string]string{"message": "取消点赞成功"})
 		})
 
-		// 检查用户是否已点赞
-		articleAuth.GET("/:id/like/status", func(c *gin.Context) {
+		// 检查用户是否已点赞某文章
+		articleAuth.GET("/:id/is-liked", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
@@ -310,7 +351,6 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				return
 			}
 
-			// 获取用户ID（从中间件设置的上下文）
 			userID, exists := c.Get("user_id")
 			if !exists {
 				utils.Error(c, http.StatusUnauthorized, "请先登录")

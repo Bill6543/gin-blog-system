@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"mime/multipart"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -31,14 +32,20 @@ func UploadImage(fileHeader *multipart.FileHeader) (string, error) {
 
 	// 构建完整路径
 	fullPath := filepath.Join(config.AppConfig.Upload.SavePath, relativePath)
+	// 确保路径使用正斜杠（Windows兼容性修复）
+	fullPath = filepath.ToSlash(fullPath)
 
 	// 保存文件
 	if err := utils.SaveUploadFileWithFilename(fileHeader, fullPath, filename); err != nil {
 		return "", fmt.Errorf("保存文件失败: %v", err)
 	}
 
-	// 返回相对URL路径（不包含uploads前缀，因为static已映射到uploads目录）
-	return filepath.Join(relativePath, filename), nil
+	// 返回相对URL路径（使用正斜杠，确保URL兼容性）
+	// 关键修复：确保返回的路径是标准URL格式，避免Windows反斜杠
+	resultPath := filepath.Join(relativePath, filename)
+	// 将所有反斜杠转换为正斜杠
+	resultPath = strings.ReplaceAll(resultPath, "\\", "/")
+	return resultPath, nil
 }
 
 // generateRandomString 生成随机字符串

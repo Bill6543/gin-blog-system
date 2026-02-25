@@ -40,6 +40,6 @@ export const articleApi = {
 
   // 检查用户是否已点赞
   checkUserLiked: (articleId: number) => {
-    return apiClient.get<ApiResponse<{ is_liked: boolean }>>(`/articles/${articleId}/like/status`)
+    return apiClient.get<ApiResponse<{ is_liked: boolean }>>(`/articles/${articleId}/is-liked`)
   }
 }
