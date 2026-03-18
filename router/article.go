@@ -15,16 +15,6 @@ import (
 
 // RegisterArticleRoutes 注册文章相关路由
 func RegisterArticleRoutes(rg *gin.RouterGroup) {
-	// 临时结构体用于接收包含TagIDs的请求
-	type ArticleRequest struct {
-		Title      string `json:"title"`
-		Content    string `json:"content"`
-		Summary    string `json:"summary"`
-		Cover      string `json:"cover"`
-		Status     int    `json:"status"`
-		CategoryID uint   `json:"category_id"`
-		TagIDs     []uint `json:"tag_ids,omitempty"`
-	}
 
 	// 公开访问的文章路由（无需认证）
 	// 获取文章列表（公开）
@@ -91,7 +81,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 	{
 		// 创建文章
 		articleAuth.POST("", func(c *gin.Context) {
-			var req ArticleRequest
+			var req model.ArticleCreateRequest
 			if err := c.ShouldBindJSON(&req); err != nil {
 				utils.Error(c, http.StatusBadRequest, "参数绑定失败: "+err.Error())
 				return
@@ -151,11 +141,11 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
 			if err != nil {
-				utils.Error(c, http.StatusBadRequest, "无效的文章ID")
+				utils.Error(c, http.StatusBadRequest, "无效的文章 ID")
 				return
 			}
 
-			var req ArticleRequest
+			var req model.ArticleUpdateRequest
 			if err := c.ShouldBindJSON(&req); err != nil {
 				utils.Error(c, http.StatusBadRequest, "参数绑定失败: "+err.Error())
 				return
