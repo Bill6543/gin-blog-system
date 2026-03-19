@@ -18,8 +18,9 @@ func CreateArticle(article *model.Article) error {
 	}()
 
 	// 确保状态值有效
-	if article.Status != 0 && article.Status != 1 {
-		article.Status = 1 // 默认发布
+	if article.Status == nil {
+		defaultStatus := 0
+		article.Status = &defaultStatus // 默认草稿
 	}
 
 	// 如果封面为空，则使用默认封面
@@ -113,6 +114,11 @@ func UpdateArticle(id uint, articleData *model.Article) error {
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		tx.Rollback()
 		return errors.New("文章不存在")
+	}
+
+	// 如果状态未设置，则保持原状态
+	if articleData.Status == nil {
+		articleData.Status = existingArticle.Status
 	}
 
 	// 更新文章基本信息

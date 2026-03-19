@@ -6,7 +6,7 @@ type ArticleCreateRequest struct {
 	Content    string `json:"content" binding:"required"`
 	Summary    string `json:"summary"`
 	Cover      string `json:"cover"`
-	Status     int    `json:"status"`
+	Status     *int   `json:"status"`
 	CategoryID uint   `json:"category_id"`
 	TagIDs     []uint `json:"tag_ids,omitempty"`
 }
@@ -17,7 +17,7 @@ type ArticleUpdateRequest struct {
 	Content    string `json:"content"`
 	Summary    string `json:"summary"`
 	Cover      string `json:"cover"`
-	Status     int    `json:"status"`
+	Status     *int   `json:"status"`
 	CategoryID uint   `json:"category_id"`
 	TagIDs     []uint `json:"tag_ids,omitempty"`
 }

@@ -151,7 +151,7 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
         </div>
         <div className="stat-item">
           <span className="stat-number">
-            {articles.filter(a => a.status === 1).length}
+            {articles.filter(a => a.status === 1 || a.status == null).length}
           </span>
           <span className="stat-label">已发布</span>
         </div>
@@ -234,7 +234,7 @@ const ArticleManager = ({ onEdit, onCreate }: ArticleManagerProps) => {
                       onClick={() => handleStatusChange(article.id, article.status)}
                       style={{ flex: '1', minWidth: '70px' }}
                     >
-                      {article.status === 1 ? '设为草稿' : '发布'}
+                      {article.status === 1 || article.status == null ? '设为草稿' : '发布'}
                     </button>
                     <button
                       className="btn btn-sm btn-danger"

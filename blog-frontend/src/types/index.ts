@@ -5,7 +5,7 @@ export interface User {
   nickname: string
   email: string
   avatar: string
-  status: number
+  status: number | null
   created_at: string
   updated_at: string
 }
@@ -17,7 +17,7 @@ export interface Article {
   content: string
   summary: string
   cover: string
-  status: number
+  status: number | null
   view_count: number
   like_count: number
   comment_count: number
@@ -36,7 +36,7 @@ export interface Category {
   id: number
   name: string
   description: string
-  status: number
+  status: number | null
   created_at: string
   updated_at: string
 }
@@ -46,7 +46,7 @@ export interface Tag {
   id: number
   name: string
   color: string
-  status: number
+  status: number | null
   article_count?: number
   created_at: string
   updated_at: string
@@ -91,7 +91,7 @@ export interface Comment {
   article_id: number
   parent_id?: number
   parent?: Comment
-  status: number
+  status: number | null
   created_at: string
   updated_at: string
 }

@@ -11,7 +11,7 @@ type Article struct {
 	Content      string    `gorm:"type:text" json:"content"`
 	Summary      string    `gorm:"type:text" json:"summary"`              // 文章摘要
 	Cover        string    `json:"cover"`                                 // 封面图片URL
-	Status       int       `gorm:"default:1" json:"status"`               // 1-发布, 0-草稿
+	Status       *int      `json:"status"`                                // 1-发布，0-草稿，nil-未设置
 	ViewCount    int       `gorm:"default:0" json:"view_count"`           // 浏览计数
 	LikeCount    int       `gorm:"default:0" json:"like_count"`           // 点赞计数
 	CommentCount int       `gorm:"default:0" json:"comment_count"`        // 评论计数

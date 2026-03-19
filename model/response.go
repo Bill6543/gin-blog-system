@@ -94,8 +94,14 @@ func addStaticPrefix(path string) string {
 	return "/static/" + path
 }
 
-// ConvertToArticleResponse 将Article模型转换为API响应结构体
+// ConvertToArticleResponse 将 Article 模型转换为 API 响应结构体
 func (a *Article) ConvertToArticleResponse() *ArticleResponse {
+	// 处理指针类型的 Status
+	status := 0
+	if a.Status != nil {
+		status = *a.Status
+	}
+
 	response := &ArticleResponse{
 		ID:      a.ID,
 		Title:   a.Title,
@@ -103,7 +109,7 @@ func (a *Article) ConvertToArticleResponse() *ArticleResponse {
 		Summary: a.Summary,
 		// 为图片路径添加静态文件前缀
 		Cover:        addStaticPrefix(a.Cover),
-		Status:       a.Status,
+		Status:       status,
 		ViewCount:    a.ViewCount,
 		LikeCount:    a.LikeCount,
 		CommentCount: a.CommentCount, // 新增评论计数

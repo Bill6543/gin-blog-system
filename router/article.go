@@ -95,7 +95,12 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 			}
 
 			// 确保状态值有效（0-草稿，1-发布）
-			status := req.Status
+			var status int
+			if req.Status == nil {
+				status = 0 // 默认草稿
+			} else {
+				status = *req.Status
+			}
 			if status != 0 && status != 1 {
 				status = 1 // 默认发布
 			}
@@ -106,7 +111,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 				Content:    req.Content,
 				Summary:    req.Summary,
 				Cover:      req.Cover,
-				Status:     status, // 使用验证后的状态值
+				Status:     &status, // 使用验证后的状态值（指针）
 				UserID:     userID.(uint),
 				CategoryID: req.CategoryID,
 			}
@@ -159,7 +164,12 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 			}
 
 			// 确保状态值有效（0-草稿，1-发布）
-			status := req.Status
+			var status int
+			if req.Status == nil {
+				status = 0 // 默认草稿
+			} else {
+				status = *req.Status
+			}
 			if status != 0 && status != 1 {
 				status = 1 // 默认发布
 			}
@@ -183,7 +193,7 @@ func RegisterArticleRoutes(rg *gin.RouterGroup) {
 			if req.CategoryID != 0 {
 				articleData.CategoryID = req.CategoryID
 			}
-			articleData.Status = status // 状态总是更新（0或1）
+			articleData.Status = &status // 状态总是更新（0 或 1，指针类型）
 			articleData.UserID = userID.(uint)
 
 			// 如果提供了TagIDs，则加载对应的标签
