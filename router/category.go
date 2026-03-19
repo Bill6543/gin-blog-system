@@ -13,6 +13,7 @@ import (
 func RegisterCategoryRoutes(rg *gin.RouterGroup) {
 	category := rg.Group("/categories")
 	{
+		// 获取分类列表（公开）
 		category.GET("", func(c *gin.Context) {
 			categories, err := service.GetAllCategories()
 			if err != nil {
@@ -22,6 +23,7 @@ func RegisterCategoryRoutes(rg *gin.RouterGroup) {
 			utils.Success(c, categories)
 		})
 
+		// 获取单个分类（公开）
 		category.GET("/:id", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
@@ -39,6 +41,7 @@ func RegisterCategoryRoutes(rg *gin.RouterGroup) {
 			utils.Success(c, category)
 		})
 
+		// 创建分类
 		category.POST("", func(c *gin.Context) {
 			var category model.Category
 			if err := c.ShouldBindJSON(&category); err != nil {
@@ -54,6 +57,7 @@ func RegisterCategoryRoutes(rg *gin.RouterGroup) {
 			utils.Success(c, category)
 		})
 
+		// 更新分类
 		category.PUT("/:id", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)
@@ -82,6 +86,7 @@ func RegisterCategoryRoutes(rg *gin.RouterGroup) {
 			utils.Success(c, updatedCategory)
 		})
 
+		// 删除分类
 		category.DELETE("/:id", func(c *gin.Context) {
 			idParam := c.Param("id")
 			id, err := strconv.ParseUint(idParam, 10, 32)

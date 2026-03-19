@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// 3. 初始化 Gin 引擎
-	r := gin.New() // 使用 New() 而不是 Default()，以便我们可以自定义中间件
+	r := gin.New() // 便于自定义中间件
 	// 添加增强版日志中间件
 	r.Use(middleware.EnhancedLogger())
 	// 添加数据库监控中间件
@@ -29,7 +29,7 @@ func main() {
 	// 添加恢复中间件
 	r.Use(gin.Recovery())
 
-	// 👇 添加 CORS 中间件（关键修复）
+	//添加 CORS 中间件
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3004", "http://localhost:3007"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

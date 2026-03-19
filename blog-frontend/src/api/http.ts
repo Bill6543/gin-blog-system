@@ -13,7 +13,7 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     console.log('发送请求:', config.method?.toUpperCase(), config.url, config.params)
-    // 从localStorage获取token
+    // 从 localStorage 获取 token
     const token = localStorage.getItem('token')
     // 排除不需要认证的接口
     const noAuthEndpoints = ['/auth/login', '/auth/register', '/auth/logout'];
